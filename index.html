@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>30‑Day Tracker — Mint Pro (Cartoon)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"> 
+<style>
+  /* ===== Design System (Cartoon/Sketch Vibe with Mint Pro Colors) ===== */
+  :root{
+    --bg:#F7FBF9;             
+    --ink:#0E1F18;            
+    --muted:#5F7068;          
+    --line:#0E1F18;           
+    --card:#FFFFFF;           
+    --mint:#17BF7D;           
+    --mint-2:#1FCB88;         
+    --mint-ink:#063427;       
+    --pill:#F1FBF6;           
+    --shadow:0 6px 0px var(--ink); 
+    --radius:16px; 
+    --radius-sm:10px;
+  }
+  
+  /* ===== Global & Background Optimization ===== */
+  *, *::before, *::after { 
+    box-sizing:border-box;
+    font-family: 'Comic Sans MS', 'Segoe Print', system-ui, -apple-system, sans-serif !important; 
+  }
+  html,body{height:100%; -webkit-font-smoothing: antialiased;}
+  body{
+    margin:0; 
+    color:var(--ink);
+    background: var(--bg);
+  }
+  body::before{ display: none; } 
+  @media (prefers-reduced-motion:no-preference){
+    .fade{animation:fade .35s ease both}
+    @keyframes fade{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+  }
+
+  .app{max-width:1120px; margin:28px auto; padding:0 16px}
+
+  /* ===== Shared Panel Style (Heavy Border Effect) ===== */
+  .panel, .clock{
+    background:var(--card); 
+    border:2px solid var(--line); 
+    border-radius:var(--radius); 
+    box-shadow:var(--shadow); 
+    padding:16px; 
+    transition:transform .1s;
+  }
+  .panel:active, .clock:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0px var(--ink);
+  }
+
+  /* ===== Header & Clock ===== */
+  header{display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; margin-bottom:14px}
+  .brand{display:flex; align-items:center; gap:14px}
+  .logo{
+    width:56px; height:56px; border-radius:18px; display:grid; place-items:center; color:var(--mint-ink); font-weight:800; font-size:32px;
+    background:var(--mint); 
+    box-shadow:var(--shadow);
+    border:2px solid var(--ink);
+  }
+  .title{line-height:1.1; margin:0}
+  .subtitle{color:var(--muted); font-size:14px}
+  .clock{padding:10px 14px; text-align:right; font-weight:bold; border-radius:var(--radius-sm);}
+  .clock .label{font-size:13px; color:var(--muted)}
+  .clock .time{font-weight:bolder; font-size:20px; font-variant-numeric:tabular-nums}
+
+  /* ===== Hero / Progress ===== */
+  .hero{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px}
+  .range{display:flex; align-items:center; justify-content:space-between; gap:12px}
+  .range .label-small{ color:var(--muted); font-size:12px }
+  .range .range-date{ font-weight:bolder; font-size:18px }
+  .range .badge{
+    background:var(--mint); color:var(--card); border:2px solid var(--ink); 
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:800;
+  }
+  .progress-wrap{margin-top:10px}
+  .progress{height:16px; width:100%; background:#EFF7F3; border:2px solid var(--ink); border-radius:999px; overflow:hidden}
+  .bar{height:100%; width:0%; background:var(--mint); transition:width .35s ease}
+
+  .pill-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .pill-row-secondary{margin-top:6px}
+  .pill-tab{
+    padding:6px 10px; border-radius:var(--radius-sm); border:2px solid var(--ink); 
+    background:var(--card); font-size:12px; color:var(--ink); font-weight: bold;
+  }
+
+  /* ===== Main Grid & Side Panel Content (NEW CHECKLISTS) ===== */
+  .grid{display:grid; grid-template-columns:340px 1fr; gap:16px}
+  .section-title{font-weight:800; display:flex; align-items:center; gap:8px; font-size:18px; margin-bottom: 10px;}
+  .section-title.spaced{margin-top:20px} /* Increased space for cleaner separation */
+  .hint{font-size:12px; color:var(--muted)}
+
+  /* Checklist Container */
+  .checklist-group { list-style: none; padding: 0; margin: 0; }
+  /* Checklist Item */
+  .checklist-group li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; font-size: 15px; font-weight: 500;
+    cursor: pointer;
+  }
+  /* Custom Checkbox (Cartoon Style) */
+  .checkbox {
+    width: 22px; height: 22px; 
+    border: 2px solid var(--ink); 
+    border-radius: 4px; 
+    background: var(--card);
+    display: grid; place-items: center; 
+    flex-shrink: 0;
+    transition: background-color .1s;
+  }
+  .checkbox::after {
+    content: ''; opacity: 0;
+    width: 10px; height: 16px; 
+    border: solid var(--mint-ink); border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+    transition: opacity .1s;
+  }
+  /* Checked State */
+  .checklist-group li.checked .checkbox {
+    background: var(--mint);
+  }
+  .checklist-group li.checked .checkbox::after {
+    opacity: 1;
+  }
+  .checklist-group li.checked {
+    color: var(--muted);
+    text-decoration: line-through 2px;
+  }
+
+  /* Download Button Styling */
+  #downloadBtn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    background: var(--mint);
+    color: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .1s;
+  }
+  #downloadBtn:hover {
+    background: var(--mint-2);
+  }
+  #downloadBtn:active {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0px var(--ink);
+  }
+
+  /* ===== Calendar (Cartoon Vibe) - Unchanged ===== */
+  .legend{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px}
+  .legend .chip{
+    display:inline-flex; align-items:center; gap:8px; padding:6px 10px; 
+    border:2px solid var(--ink); background:#fff; border-radius:999px; font-size:12px;
+  }
+  .legend .dot{width:10px; height:10px; border-radius:50%; background:#cfeee2; border:1px solid #bfe7d6}
+  .legend .dot.done{background:var(--mint)}
+
+  .weekday{display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin:8px 0; color:var(--ink); font-size:14px; text-align:center; font-weight:bolder;}
+  
+  .days{
+    display:grid; 
+    grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); 
+    gap:10px;
+  }
+  
+  .day{
+    border:2px solid var(--line); border-radius:var(--radius-sm); padding:12px; 
+    min-height:96px; background:var(--card); display:flex; flex-direction:column; 
+    justify-content:space-between; cursor:pointer; box-shadow: 0 3px 0px var(--ink);
+    transition:all .07s;
+  }
+  .day:hover{box-shadow: 0 4px 0px var(--ink);}
+  .day:active{transform:translateY(2px); box-shadow: 0 1px 0px var(--ink);}
+
+  .day-top{ display:flex;align-items:center;justify-content:space-between }
+  .day-bottom{ display:flex;justify-content:space-between;align-items:center;margin-top:8px }
+
+  .date{font-size:14px; color:var(--ink); font-weight:bolder;}
+  .status{
+    font-size:12px; padding:6px 10px; border-radius:999px; 
+    border:2px solid var(--ink); color:var(--ink); background:var(--pill); font-weight: bold;
+  }
+  .done .status{ background:var(--mint); color:var(--mint-ink); border-color:var(--ink); }
+  .done .date{color:var(--ink)}
+  
+  .dot-small{width:10px; height:10px; border-radius:50%; background:var(--pill); border:1px solid var(--muted)}
+  .done .dot-small{background:var(--mint); border-color:var(--mint)}
+  .today{outline:4px dashed var(--mint); outline-offset:2px; box-shadow: none;} 
+  .today:hover{box-shadow: none;}
+  .muted-cell{opacity:.25; pointer-events: none;}
+
+  /* ===== Mobile Proportionality Adjustments ===== */
+  @media (max-width: 980px){ 
+    .grid{grid-template-columns:1fr} 
+    .hero{grid-template-columns:1fr}
+  }
+
+  @media (max-width: 500px) {
+    .app{ margin:16px auto; padding:0 12px; }
+    header{ grid-template-columns:1fr; margin-bottom:12px; }
+    .clock{ max-width:200px; justify-self: center; }
+    .checklist-group li { font-size: 14px; padding: 6px 0; }
+    .checkbox { width: 20px; height: 20px; }
+    .weekday{ gap:6px; font-size:12px; }
+    .days{ grid-template-columns:repeat(auto-fit, minmax(42px, 1fr)); gap:6px; }
+    .day{ min-height:70px; padding:8px; border-radius:var(--radius-sm); }
+    .date, .status, .hint{ font-size:10px; }
+    .fab{ width:50px; height:50px; font-size:18px; }
+    .footer-note{ font-size:10px; }
+  }
+
+  /* ===== Floating Action Buttons (FABs) - Unchanged ===== */
+  .fab-wrap{position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:10px; z-index:100}
+  .fab{
+    width:60px; height:60px; border-radius:50%; border:2px solid var(--ink); 
+    background:var(--mint); color:var(--card); display:grid; place-items:center; 
+    font-size:28px; box-shadow:var(--shadow); cursor:pointer; 
+    transition:transform .15s, box-shadow .15s; font-weight: 900;
+  }
+  .fab:hover{transform:translateY(-1px); box-shadow:0 7px 0px var(--ink)}
+  .fab:active{transform:translateY(3px); box-shadow:0 3px 0px var(--ink)}
+  .fab.alt{background:var(--card); color:var(--ink); border-color:var(--ink);}
+  .fab.alt:hover{box-shadow:0 7px 0px var(--ink)}
+  .fab.alt:active{box-shadow:0 3px 0px var(--ink)}
+
+  .footer-note{margin:18px 0 8px; text-align:center; color:var(--muted); font-size:12px}
+</style>
+</head>
+<body>
+  <div class="app fade">
+    <header>
+      <div class="brand">
+        <div class="logo">🤩</div>
+        <div>
+          <h1 class="title">30‑Day Tracker — Mint Pro</h1>
+          <div class="subtitle">Fun Mode Activated! PH Time: Oct 25, 2025 Start</div>
+        </div>
+      </div>
+      <div class="clock">
+        <div class="label">PH Time (Asia/Manila)</div>
+        <div id="clock" class="time">--:--:--</div>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="panel">
+        <div class="range">
+          <div>
+            <div class="label label-small">Program range</div> 
+            <div id="rangeLabel" class="range-date">—</div>
+          </div>
+          <div class="badge"><span id="progTxt">0/30</span> days</div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress"><div id="bar" class="bar"></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-title">📌 Today’s Quick Plan</div>
+        <div class="pill-row">
+          <span class="pill-tab">Warm‑up (5m)</span>
+          <span class="pill-tab">Cardio Blast (20m)</span>
+          <span class="pill-tab">Toning/Plank (10m)</span>
+          <span class="pill-tab">Facial Yoga (5m)</span>
+        </div>
+        <div class="pill-row pill-row-secondary"> 
+          <span class="pill-tab">Breakfast: Protein + Rice</span>
+          <span class="pill-tab">Lunch: Fiber + Fish</span>
+          <span class="pill-tab">Dinner: Less Carbs + Veggies</span>
+          <span class="pill-tab">Water 💧 Sleep 💤</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        
+        <div class="section-title">🏃 Workout Flow (30–60m)</div>
+        <ul id="workoutList" class="checklist-group">
+          <li data-action="Warmup"><div class="checkbox"></div>✨ **Warm‑up (5m):** Arm circles, light jog, jump rope simulation.</li>
+          <li data-action="Cardio"><div class="checkbox"></div>🔥 **Cardio (20–30m):** Jog/brisk walk OR 3 sets of High Intensity Intervals.</li>
+          <li data-action="Toning"><div class="checkbox"></div>💪 **Toning (10–15m):** 3 sets of Squats, Lunges, Push‑ups, and 20s Plank.</li>
+          <li data-action="Cooldown"><div class="checkbox"></div>🧘 **Cooldown (5m):** Full-body stretching + 3–5m gentle facial yoga.</li>
+        </ul>
+
+        <div class="section-title spaced">🍽️ PH Food Ideas (Clean Eating)</div>
+        <ul id="foodList" class="checklist-group">
+          <li data-action="Breakfast"><div class="checkbox"></div>🍳 **Breakfast:** 1–2 eggs + small rice + veggies. *Focus on Protein.*</li>
+          <li data-action="Lunch"><div class="checkbox"></div>🐟 **Lunch:** Chicken/fish + normal rice + *gulay*. *Focus on Fiber.*</li>
+          <li data-action="Dinner"><div class="checkbox"></div>🥗 **Dinner:** Half‑cup rice + *gulay*. *Keep it Light.*</li>
+          <li data-action="Snack"><div class="checkbox"></div>🍌 **Snack:** Saging/mansanas, small nuts. 🚫 *No softdrinks.*</li>
+        </ul>
+
+        <div class="section-title spaced">🪞 Skin Basics (Glow Up!)</div>
+        <ul id="skinList" class="checklist-group">
+          <li data-action="Sunblock"><div class="checkbox"></div>☀️ **Protection:** Apply sunblock before going out (PH is hot!).</li>
+          <li data-action="Hygiene"><div class="checkbox"></div>🧼 **Hygiene:** Rinse face after sweating. Change pillowcase.</li>
+          <li data-action="Remedies"><div class="checkbox"></div>🌿 **Remedies:** Calamansi dab or honey/aloe vera (2–3×/week).</li>
+          <li data-action="HydrateSleep"><div class="checkbox"></div>💤 **Lifestyle:** Drink 2–3L water AND get 7–8h sleep.</li>
+        </ul>
+        
+        <button id="downloadBtn" title="Download your progress as a text file">
+            ⬇️ DOWNLOAD MY 30-DAY RESULTS
+        </button>
+
+        <p class="hint">Tip: Tap any item above to check it off! Your progress is summarized below.</p>
+      </div>
+
+      <div class="panel">
+        <div class="legend">
+          <span class="chip"><span class="dot"></span> Not done</span>
+          <span class="chip"><span class="dot done"></span> Done!</span>
+          <span class="chip">Tap a day to toggle</span>
+        </div>
+        <div class="weekday"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+        <div id="days" class="days"></div>
+      </div>
+    </div>
+
+    <div class="fab-wrap">
+      <button id="markBtn" class="fab" title="Mark today done">✔</button>
+      <button id="undoBtn" class="fab alt" title="Undo today">↩</button>
+    </div>
+
+    <div class="footer-note">Start date fixed to **Oct 25, 2025**. No saving — reload resets marks. **Checklist status is temporary.**</div>
+  </div>
+
+<script>
+// ===== JAVASCRIPT: Checklist and Download Logic Added =====
+
+// Configuration and Timezone
+const TZ = "Asia/Manila";
+const DAYS = 30;
+const START = new Date('2025-10-25T00:00:00Z'); 
+
+// In-memory data stores (reset on refresh)
+const status = {}; // Stores calendar status (e.g., {'2025-10-25': true})
+const dayElements = {}; 
+
+// PH time formatting helpers
+const fmtTime = new Intl.DateTimeFormat("en-PH", { timeZone: TZ, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12: false });
+const fmtD = new Intl.DateTimeFormat("en-PH", { timeZone: TZ, month:"short", day:"2-digit" });
+const fmtLong = new Intl.DateTimeFormat("en-PH", { timeZone: TZ, month:"long", day:"numeric", year:"numeric" });
+const fmtShort = new Intl.DateTimeFormat("en-PH", { timeZone: TZ, month:"short", day:"2-digit" });
+
+function ymdStringPH(d){ 
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(d);
+}
+function manilaNow(){ 
+  return new Date(new Date().toLocaleString("en-US", { timeZone: TZ })); 
+}
+function addDays(d,n){ 
+  const x=new Date(d); 
+  x.setDate(x.getDate()+n); 
+  return x; 
+}
+
+// Elements
+const daysEl = document.getElementById('days');
+const markBtn = document.getElementById('markBtn');
+const undoBtn = document.getElementById('undoBtn');
+const clockEl = document.getElementById('clock');
+const rangeLabel = document.getElementById('rangeLabel');
+const bar = document.getElementById('bar');
+const progTxt = document.getElementById('progTxt');
+const downloadBtn = document.getElementById('downloadBtn');
+const checklistItems = document.querySelectorAll('.checklist-group li');
+
+
+// ===== CORE CALENDAR LOGIC (Unchanged from previous step) =====
+
+function build(){
+  daysEl.innerHTML='';
+  const start=START; 
+  const end=addDays(start,DAYS-1);
+  rangeLabel.textContent = `${fmtLong.format(start)} → ${fmtLong.format(end)}`;
+
+  const firstWeekday = start.getDay();
+  for(let i=0;i<firstWeekday;i++){
+    const pad=document.createElement('div'); pad.className='day muted-cell'; daysEl.appendChild(pad);
+  }
+  
+  for(let i=0;i<DAYS;i++){
+    const d=addDays(start,i); 
+    const key=ymdStringPH(d); 
+    
+    const cell=document.createElement('div'); 
+    cell.className='day'; cell.dataset.key=key;
+    
+    cell.innerHTML=`
+      <div class="day-top">
+        <div class="date">${fmtD.format(d)}</div>
+        <div class="dot-small"></div>
+      </div>
+      <div class="day-bottom">
+        <span class="status" id="s_${key}">Not done</span>
+        <span class="hint">Day ${i+1}</span>
+      </div>`;
+      
+    cell.addEventListener('click',()=> setDone(key,!status[key]));
+    daysEl.appendChild(cell);
+    dayElements[key] = cell; 
+  }
+  
+  highlightToday();
+  refreshProgress();
+}
+
+function highlightToday(){
+  const todayKey = ymdStringPH(manilaNow());
+  document.querySelectorAll('.day').forEach(el=>el.classList.remove('today'));
+  if (dayElements[todayKey]) dayElements[todayKey].classList.add('today');
+}
+
+function setDone(key,val){
+  status[key]=!!val;
+  const cell = dayElements[key]; 
+
+  if(cell){
+    cell.classList.toggle('done',!!val);
+    const s=cell.querySelector(`#s_${key}`); 
+    if(s) s.textContent = val? 'Done!' : 'Not done'; 
+  }
+  refreshProgress();
+}
+
+function refreshProgress(){
+  const count = Object.values(status).filter(Boolean).length;
+  const pct = Math.round((count/DAYS)*100);
+  
+  progTxt.textContent = `${count}/${DAYS}`; 
+  bar.style.width = pct+'%';
+}
+
+// ===== NEW FEATURE: CHECKLIST INTERACTION =====
+
+checklistItems.forEach(item => {
+    item.addEventListener('click', () => {
+        item.classList.toggle('checked');
+    });
+});
+
+
+// ===== NEW FEATURE: DOWNLOAD LOGIC =====
+
+downloadBtn.addEventListener('click', () => {
+    const completedDays = Object.keys(status).filter(key => status[key]).sort();
+    const totalCompleted = completedDays.length;
+    const totalDays = DAYS;
+    
+    let content = `====================================\n`;
+    content += `🏆 30-DAY MINT PRO TRACKER RESULTS 🏆\n`;
+    content += `Generated on: ${fmtLong.format(manilaNow())} PH Time\n`;
+    content += `====================================\n\n`;
+    
+    content += `PROGRESS SUMMARY:\n`;
+    content += `Total Days Completed: ${totalCompleted} / ${totalDays}\n`;
+    content += `Completion Rate: ${Math.round((totalCompleted / totalDays) * 100)}%\n\n`;
+    
+    if (totalCompleted > 0) {
+        content += `COMPLETED DATES:\n`;
+        completedDays.forEach(dateKey => {
+            // Convert 'YYYY-MM-DD' key back to a display date string
+            const displayDate = fmtShort.format(new Date(dateKey)); 
+            content += `- Day: ${displayDate}\n`;
+        });
+    } else {
+        content += `(No days marked as completed yet. Time to get started!)\n`;
+    }
+
+    content += `\n====================================\n`;
+    content += `Keep up the great work! ✨\n`;
+    
+    const filename = `MintPro_Tracker_Results_${ymdStringPH(manilaNow())}.txt`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    
+    // Create a temporary link element to trigger the download
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    alert(`Success! Downloaded ${filename}`);
+});
+
+
+// ===== INITIALIZATION =====
+
+markBtn.addEventListener('click',()=>{ 
+  const key=ymdStringPH(manilaNow()); 
+  setDone(key,true); 
+});
+
+undoBtn.addEventListener('click',()=>{ 
+  const key=ymdStringPH(manilaNow()); 
+  setDone(key,false); 
+});
+
+function tick(){ 
+  clockEl.textContent = fmtTime.format(manilaNow()); 
+  highlightToday(); 
+}
+setInterval(tick,1000); 
+tick();
+
+build();
+</script>
+</body>
+</html>
